@@ -62,3 +62,15 @@ end
 # Cute
 ################################################################################
 
+function cute(x)
+    n = length(x)
+    inds = 1:n-4
+    total = 0
+    for i in inds
+        total += (-4x[i]+3)^2 + (x[i]^2 + 2*x[i+1]^2 + 3*x[i+2]^2 + 4*x[i+3]^2 + 5*x[n]^2)^2
+		return total
+    end
+end
+
+cute_g = Calculus.gradient(cute)
+cute_h = Calculus.hessian(cute)
