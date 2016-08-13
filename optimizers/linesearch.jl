@@ -12,16 +12,17 @@ function line_search(f, x0, grad_f, hess_f, opt_type="steepest", max_iter=50, to
 
     for i in 1:max_iter
         println(i)
-        xcurr = xvals[i,:]'
+        xcurr = xvals[i,:]'[:,1]
 
         p, alpha = compute_steps(xcurr, f, grad_f, hess_f, opt_type)
         xnew = xcurr + alpha * p
         xvals = vcat(xvals, xnew')
 
         if abs(mean(xnew - xcurr)) <= tol
-            break
+            return(xvals)
         end
     end
+    println("Finished algorithm without converging.")
     return(xvals)
 end
 
