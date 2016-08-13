@@ -54,9 +54,29 @@ end
 #println(sum(grad_f(x)-Calculus.gradient(f,x)))
 #println(sum(hess_f(x)-Calculus.hessian(f,x)))
 
+f_g = Calculus.gradient(f,x)
+f_h = Calculus.hessian(f,x)
+
 ################################################################################
 # Rosenbrock
 ################################################################################
+
+function rosenbrock(x)
+    """
+    Assumes x has an even number of elemnts.
+    """
+    n = length(x)
+    @assert n%2 == 0
+    total = 0
+    for i in 1:Integer(n/2)
+        total += (1-x[2*i-1])^2 + 10*(x[2*i] - x[2*i-1]^2)^2
+    end
+    return total
+end
+
+rosenbrock_g = Calculus.gradient(rosenbrock)
+rosenbrock_h = Calculus.hessian(rosenbrock)
+
 
 ################################################################################
 # Cute
@@ -64,9 +84,8 @@ end
 
 function cute(x)
     n = length(x)
-    inds = 1:n-4
     total = 0
-    for i in inds
+    for i in 1:n-4
         total += (-4x[i]+3)^2 + (x[i]^2 + 2*x[i+1]^2 + 3*x[i+2]^2 + 4*x[i+3]^2 + 5*x[n]^2)^2
 		return total
     end
@@ -74,3 +93,19 @@ end
 
 cute_g = Calculus.gradient(cute)
 cute_h = Calculus.hessian(cute)
+
+
+################################################################################
+# Fenton
+################################################################################
+
+function fenton(x)
+    """
+    Using Newton's method, the starting point [3;2] converges but [3;4] diverges
+    """
+    x1 = x[1]; x2 = x[2];
+    return((12 + x1*x1 + (1+x2*x2)/(x1*x1) + (x1*x1*x2*x2+100)/((x1*x2)^4)) / 10)
+end
+
+fenton_g = Calculus.gradient(fenton)
+fenton_h = Calculus.hessian(fenton)
