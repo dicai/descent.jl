@@ -1,4 +1,5 @@
 function cholesky_mod(beta, H)
+    @assert beta > 0
     if minimum(H) > 0
         tau = 0
     else
@@ -8,6 +9,7 @@ function cholesky_mod(beta, H)
                 L = chol(H + eye(size(H)[1]) * tau)
                 return(L)
             end
+            tau *= max(2*tau, beta)
         end
     end
 end
