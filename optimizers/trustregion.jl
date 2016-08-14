@@ -113,3 +113,28 @@ function cauchy_point(delta, gk, Bk)
     # Cauchy point equation
     return -tau * delta / norm(gk, 2) * gk
 end
+
+
+function dogleg(delta, gk, Bk, p_U)
+    p_B = -Bk \ gk
+
+    # compute tau
+    diff = p_B - p_U
+    a = norm(diff, 2)^2
+    b = (2 * p_U' * diff)[1]
+    c = norm(p_U, 2)^2 - delta^2
+    tau = (1 + (-b + sqrt(b^2 - 4 * a *c)) / (2*a))
+
+    try
+        @assert tau >=0 && tau <= 2
+    catch
+        println(tau)
+    end
+
+    if tau <= 1
+        return tau * p_U
+    else
+        return p_U + (tau-1) * diff
+    end
+
+end
