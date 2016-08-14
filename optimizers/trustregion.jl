@@ -29,7 +29,7 @@ function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, method="
         Bk = h(xcurr)
 
         if !check_posdef(Bk)
-            Bk = cholesky_mod(Bk)
+            Bk = cholesky_mod(1e-3, Bk)
             ncalls += 1
         end
 
