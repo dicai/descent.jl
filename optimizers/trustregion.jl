@@ -23,7 +23,9 @@ function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, method="
 
     for i in 1:max_iter
         i % 100 == 0 && println("Iteration: ", i)
+
         xcurr = xvals[end]
+
         fk = f(xcurr)
         gk = g(xcurr)
         Bk = h(xcurr)
@@ -39,8 +41,9 @@ function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, method="
         # decrease trust region radius
         if rho < 1/4
             delta *= 1/4
-        # increase trust region radius (or keep same)
+
         else
+            # increase trust region radius
             if rho > 3/4 && norm(p,2) == delta
                 delta = min(2*delta, deltahat)
             end
@@ -92,18 +95,21 @@ function compute_rho(xcurr, f, gk, Bk, p)
     return ((fk - f(xcurr + p)) ./ (model(zeros(n), xcurr, fk, gk, Bk) - model(p, xcurr, fk, gk, Bk)))[1]
 end
 
-function cholesky_mod(beta, H)
+function cholesky_mod(beta, H, max_iter=1000)
     @assert beta > 0
     if minimum(diag(H)) > 0
         tau = 0
     else
         tau = -minimum(diag(H)) + beta
     end
-    while true
+    #while true
+    for i in 1:max_iter
         candidate = H + tau * eye(H)
         check_posdef(candidate) && return candidate
         tau = max(2*tau, beta)
     end
+
+    error("Infinite loop encountered")
 end
 
 function check_posdef(A)
@@ -117,9 +123,25 @@ end
 
 
 
-
 function solve_subproblem(delta, gk, Bk, method="cauchy")
+
     if method == "cauchy"
+        return cauchy_point(delta, gk, Bk)
+    elseif method == "dogleg"
+        p_U = -gk' * gk ./ ((gk' * Bk * gk)' .* gk)
+        p_B = -Bk \ gk
+        pnorm = norm(p_B, 2)
+        if pnorm > delta
+            return cauchy_point(delta, gk, Bk)
+            #return p_B
+        elseif pnorm < delta
+            return p_B
+            #-Bk \ gk
+        else
+            return dogleg(delta, gk, Bk, p_U)
+        end
+    else
+        println("defaulting to Cauchy point")
         return cauchy_point(delta, gk, Bk)
     end
 end
@@ -145,6 +167,7 @@ end
 
 function dogleg(delta, gk, Bk, p_U)
     p_B = -Bk \ gk
+    #p_U = -gk' * gk ./ ((gk' * Bk * gk)' .* gk)
 
     # compute tau
     diff = p_B - p_U
