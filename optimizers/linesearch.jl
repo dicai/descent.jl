@@ -11,7 +11,7 @@ function line_search(f, x0, g, h, opt_type="steepest", max_iter=50, tol=1e-6)
     ncalls = 0
 
     for i in 1:max_iter
-        i % 100 == 0 && println(i)
+        i % 100 == 0 && println("Iteration: ", i)
         xcurr = xvals[end]
 
         p, alpha, nc = compute_steps(xcurr, f, g, h, opt_type)
@@ -53,9 +53,7 @@ function compute_steps(xcurr, f, g, h, opt_type)
         if !check_posdef(Bk)
             ncalls += 1
             Bk = cholesky_mod(1e-3, Bk)
-            #println("Modifying indefinite matrix")
         end
-        @assert check_posdef(Bk)
         p = newton(gk, Bk)
         alpha = get_step_size(1, 0.9, xcurr, f, g, p)
     end
@@ -89,7 +87,6 @@ function cholesky_mod(beta, H)
     else
         tau = -minimum(diag(H)) + beta
     end
-    println(tau)
     while true
         candidate = H + tau * eye(H)
         check_posdef(candidate) && return candidate

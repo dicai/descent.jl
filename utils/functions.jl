@@ -54,8 +54,8 @@ end
 #println(sum(grad_f(x)-Calculus.gradient(f,x)))
 #println(sum(hess_f(x)-Calculus.hessian(f,x)))
 
-f_g = Calculus.gradient(f,x)
-f_h = Calculus.hessian(f,x)
+f_g = Calculus.gradient(f)
+f_h = Calculus.hessian(f)
 
 ################################################################################
 # Rosenbrock
