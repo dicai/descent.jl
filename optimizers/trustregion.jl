@@ -1,4 +1,4 @@
-function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, tol=10e-7)
+function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, method="cauchy", tol=10e-7)
 
     """
     x0: vector of the initial starting point of the algorithm
@@ -18,27 +18,29 @@ function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, tol=10e-
 
     delta = delta0
     n = length(x0)
-    xvals = reshape(x0, (1,n))
-
+    xvals = Vector{Vector{Float64}}(); push!(xvals, x0)
+    ncalls = 0
 
     for i in 1:max_iter
-        println(i)
-
-        xcurr = xvals[i,:]'[:,1]
-
+        i % 100 == 0 && println("Iteration: ", i)
+        xcurr = xvals[end]
         fk = f(xcurr)
         gk = g(xcurr)
         Bk = h(xcurr)
 
-        p = solve_subproblem(delta, gk, Bk, "cauchy")
+        if !check_posdef(Bk)
+            Bk = cholesky_mod(Bk)
+            ncalls += 1
+        end
+
+        p = solve_subproblem(delta, gk, Bk, method)
         rho = compute_rho(xcurr, f, gk, Bk, p)
 
         # decrease trust region radius
         if rho < 1/4
             delta *= 1/4
-
+        # increase trust region radius (or keep same)
         else
-            # increase trust region radius
             if rho > 3/4 && norm(p,2) == delta
                 delta = min(2*delta, deltahat)
             end
@@ -52,9 +54,11 @@ function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, tol=10e-
             xnew = xcurr
         end
 
-        xvals = vcat(xvals, xnew')
+        push!(xvals, xnew)
 
         if abs(mean(xnew - xcurr)) <= tol
+            println("Number of indefinite fixes ", ncalls)
+            println("Number of iterations: ", i)
             return xvals
         end
 
@@ -87,6 +91,30 @@ function compute_rho(xcurr, f, gk, Bk, p)
     n = length(p)
     return ((fk - f(xcurr + p)) ./ (model(zeros(n), xcurr, fk, gk, Bk) - model(p, xcurr, fk, gk, Bk)))[1]
 end
+
+function cholesky_mod(beta, H)
+    @assert beta > 0
+    if minimum(diag(H)) > 0
+        tau = 0
+    else
+        tau = -minimum(diag(H)) + beta
+    end
+    while true
+        candidate = H + tau * eye(H)
+        check_posdef(candidate) && return candidate
+        tau = max(2*tau, beta)
+    end
+end
+
+function check_posdef(A)
+    try
+        L = chol(A)
+        return true
+    catch
+        return false
+    end
+end
+
 
 
 
