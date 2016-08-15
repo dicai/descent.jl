@@ -79,7 +79,7 @@ rosenbrock_h = Calculus.hessian(rosenbrock)
 
 
 ################################################################################
-# Cute
+# Cute functions
 ################################################################################
 
 function cute(x)
@@ -94,6 +94,19 @@ end
 cute_g = Calculus.gradient(cute)
 cute_h = Calculus.hessian(cute)
 
+function cute2(x)
+    """
+    the cute2 function
+    """
+    n = length(x)
+    inds = 2:n-3
+    return sum((-4*x[inds]+3.0).^2) +
+        sum((x[inds].^2 + 2*x[inds+1].^2 +
+		3*x[inds+2].^2 + 4*x[inds+3].^2 + 5*x[1].^2).^2)
+end
+
+cute2_g = Calculus.gradient(cute2)
+cute2_h = Calculus.hessian(cute2)
 
 ################################################################################
 # Fenton
