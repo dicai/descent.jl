@@ -19,6 +19,12 @@ Guide.xlabel("iteration"), Guide.ylabel("f(x)"), Guide.title("Value of function"
 Guide.manual_color_key("Legend", ["Newton", "steepest"], ["blue", "red"]),
 Scale.x_log10, Scale.y_log10)
 
+Gadfly.plot(layer(x=1:nsamps, y=xvals, Geom.line, Theme(default_color=color("blue"))),
+layer(x=1:nsamps2, y=svals, Geom.line, Theme(default_color=color("red"))),
+Guide.xlabel("iteration"), Guide.ylabel("x"), Guide.title("Value of function"),
+Guide.manual_color_key("Legend", ["Newton", "steepest"], ["blue", "red"]),
+Scale.x_log10, Scale.y_log10)
+
 nsamps = length(xvals)
 
 grads = [norm(fenton_g(xvals[i]), 2) for i in 1:nsamps]
@@ -30,6 +36,14 @@ layer(x=1:nsamps2-1, y=grads2[2:nsamps2,:]./grads2[1:nsamps2-1,:], Geom.line, Th
 Guide.xlabel("iteration"), Guide.ylabel("gradient norm ratios"), Guide.title("gradient norm ratios"),
 Guide.manual_color_key("Legend", ["Newton", "steepest"], ["blue", "red"]),
 Scale.x_log10, Scale.y_log10)
+
+grads2[end-10:end]
+
+[log(x) for x in grads2[end-10:end]]
+
+[log(abs(log(x))) for x in grads[1:end-1]]
+
+[log(x) for x in grads[1:end-1]]
 
 Gadfly.plot(layer(x=1:nsamps, y=grads, Geom.line, Theme(default_color=color("blue"))),
 layer(x=1:nsamps2, y=grads2, Geom.line, Theme(default_color=color("red"))),

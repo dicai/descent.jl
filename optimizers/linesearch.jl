@@ -5,13 +5,16 @@ function line_search(f, x0, g, h, opt_type="steepest", max_iter=50, tol=1e-6)
     grad_f: gradient of the objective
     hess_f: Hessian of the objective, not required for all methods
     opt_type: type of step direction
+        "steepest"
+        "newton"
+        "newton_CG"
     """
     n = length(x0)
     xvals = Vector{Vector{Float64}}(); push!(xvals, x0)
     ncalls = 0
 
     for i in 1:max_iter
-        i % 100 == 0 && println("Iteration: ", i)
+        i % 100 == 0 && println(i)
         xcurr = xvals[end]
 
         p, alpha, nc = compute_steps(xcurr, f, g, h, opt_type)
@@ -56,9 +59,26 @@ function compute_steps(xcurr, f, g, h, opt_type)
         end
         p = newton(gk, Bk)
         alpha = get_step_size(1, 0.9, xcurr, f, g, p)
+
+    elseif opt_type == "newton_CG"
+        Bk = h(xcurr)
+        if !check_posdef(Bk)
+            ncalls += 1
+            Bk = cholesky_mod(1e-3, Bk)
+        end
+        p = newton_CG(gk, Bk)
+        alpha = get_step_size(1, 0.9, xcurr, f, g, p)
+    elseif opt_type == "quasi_Newton_BFGS"
+        println(1)
+    elseif opt_type == "quasi_Newton_SR1"
+        println(1)
+    else
+        println(1)
     end
+
     return p, alpha, ncalls
 end
+
 
 function get_step_size(alpha_init, rho, xcurr, f, grad_f, p_k, c=1e-4)
 
@@ -80,25 +100,30 @@ function newton(gk, Bk)
     return(-Bk \ gk)
 end
 
-function cholesky_mod(beta, H)
-    @assert beta > 0
-    if minimum(diag(H)) > 0
-        tau = 0
-    else
-        tau = -minimum(diag(H)) + beta
-    end
+
+function newton_CG(gk, Bk)
+    gradnorm = norm(gk, 2)[1]
+    tol = min(0.5, sqrt(gradnorm)) * gradnorm
+
+    z = 0; r = gk; d = -gk
+
     while true
-        candidate = H + tau * eye(H)
-        check_posdef(candidate) && return candidate
-        tau = max(2*tau, beta)
+        if (d' * Bk * d)[1] <= 0
+            if j == 1
+                return -fk
+            else
+                return z
+            end
+        end
+        a = (r'*r ./ (d' * Bk * d))[1]
+        z += a * d
+        rold = r
+        r += a * Bk * d
+        if norm(r, 2) <= tol
+            return z
+        end
+        beta = ((r' * r) ./ (rold' * rold))[1]
+        d = -r + beta * d
     end
 end
 
-function check_posdef(A)
-    try
-        L = chol(A)
-        return true
-    catch
-        return false
-    end
-end
