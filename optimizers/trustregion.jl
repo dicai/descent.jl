@@ -6,8 +6,13 @@ function trust_region(x0, deltahat, delta0, eta, f, g, h, max_iter=100, method="
     delta0: starting trust region radius
     eta: acceptance threshold
     f: objective function
-    grad: gradient function
-    hess: Hessian function
+    g: gradient function
+    h: Hessian function
+	method: method to use for solving subproblem
+        "cauchy" - Cauchy point algorithm for Newton
+        "dogleg" - dogleg algorithm for Newton
+        "cg_steihaug" - Steihaug algorithm, CG method
+        "SR1" - symmetric rank 1 updating for quasi-Newton
     max_iter: maximum number of iterations
     tol: when to break out
     """
@@ -124,6 +129,18 @@ end
 
 
 function solve_subproblem(delta, gk, Bk, method="cauchy")
+	"""
+    Solves the trust-region subproblem, returning a search direction pk.
+
+    delta: trust-region radius
+    gk: gradient at current iterate
+    Bk: Hessian (or symmetric PD matrix) at current iterate
+    method: method to use for solving subproblem
+        "cauchy" - Cauchy point algorithm for Newton
+        "dogleg" - dogleg algorithm for Newton
+        "cg_steihaug" - Steihaug algorithm, CG method
+        "SR1" - symmetric rank 1 updating for quasi-Newton
+    """
 
     if method == "cauchy"
         return cauchy_point(delta, gk, Bk)
@@ -140,6 +157,10 @@ function solve_subproblem(delta, gk, Bk, method="cauchy")
         else
             return dogleg(delta, gk, Bk, p_U)
         end
+	elseif method == "cg_steihaug"
+        return cg_steihaug(delta, gk, Bk)
+    elseif method == "SR1"
+        println("")
     else
         println("defaulting to Cauchy point")
         return cauchy_point(delta, gk, Bk)
@@ -191,7 +212,7 @@ function dogleg(delta, gk, Bk, p_U)
 end
 
 
-function cg_steinhaug(delta, gk, Bk)
+function cg_steihaug(delta, gk, Bk)
     gradnorm = norm(gk, 2)[1]
     tol = min(0.5, sqrt(gradnorm)) * gradnorm
     z = zeros(gk); r = gk; d = -gk
