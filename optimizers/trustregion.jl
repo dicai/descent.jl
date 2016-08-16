@@ -189,3 +189,37 @@ function dogleg(delta, gk, Bk, p_U)
     end
 
 end
+
+
+function cg_steinhaug(delta, gk, Bk)
+    gradnorm = norm(gk, 2)[1]
+    tol = min(0.5, sqrt(gradnorm)) * gradnorm
+    z = zeros(gk); r = gk; d = -gk
+
+    if norm(r, 2) < tol
+        return z
+    end
+
+    while true
+        # negative curvature
+        if (d' * Bk * d)[1] <= 0
+            return cauchy_point(delta, gk, Bk)
+        end
+        a = (r'*r ./ (d' * Bk * d))[1]
+        z += a * d
+
+        # violates trust region bound
+        if norm(z, 2) >= delta
+            return cauchy_point(delta, gk, Bk)
+        end
+        rold = r
+        r += a * Bk * d
+
+        # convergence tolerance satisfied
+        if norm(r, 2) <= tol
+            return z
+        end
+        beta = ((r' * r) ./ (rold' * rold))[1]
+        d = -r + beta * d
+    end
+end

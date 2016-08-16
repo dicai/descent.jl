@@ -106,7 +106,7 @@ function newton_CG(gk, Bk)
     gradnorm = norm(gk, 2)[1]
     tol = min(0.5, sqrt(gradnorm)) * gradnorm
 
-    z = 0; r = gk; d = -gk
+    z = zeros(gk); r = gk; d = -gk; j = 1
 
     while true
         if (d' * Bk * d)[1] <= 0
@@ -125,6 +125,7 @@ function newton_CG(gk, Bk)
         end
         beta = ((r' * r) ./ (rold' * rold))[1]
         d = -r + beta * d
+        j += 1
     end
 end
 

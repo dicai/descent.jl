@@ -7,16 +7,19 @@ Julia implementation of various basic optimization methods.
     1. Steepest (gradient) descent
     2. Newton's method
     3. Newton-CG (conjugate gradient)
+    3. quasi-Newton BFGS
 2. Trust region (`optimizers/trustregion.jl`)
     1. Newton's method
         1. Cauchy point algorithm
         2. Dogleg algorithm
-        3. CG-Steinhaug
+    2. CG-Steinhaug
 
-Basic indefinite matrix handling for Newton methods, based on iteratively adding a small
+For the line search algorithms, step sizes were chosen using the Armijo
+backtracking algorithm.
+
+Basic indefinite matrix handling for Newton-type methods, based on iteratively adding a small
 multiple of the identity matrix until the matrix of interest is sufficiently
 positive definite.
-
 
 All optimization methods are located in the folder `optimizers/`.
 
