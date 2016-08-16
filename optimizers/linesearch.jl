@@ -9,6 +9,7 @@ function line_search(f, x0, g, h, opt_type="steepest", max_iter=50, tol=1e-6)
         "newton"
         "newton_CG"
     """
+    println("Using method ", opt_type)
     n = length(x0)
     xvals = Vector{Vector{Float64}}(); push!(xvals, x0)
     ncalls = 0
