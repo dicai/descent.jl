@@ -29,6 +29,19 @@ All optimization methods are located in the folder `optimizers/`.
 
 # Examples
 
+To run a line search algorithm, type
+
+```julia
+xvals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "newton", 2000)
+```
+Here we are optimizing the Rosenbrock function using Newton's method, starting with a vector of all 3's, and the max number of iterations to run is 2000.
+
+To run a trust region algorithm, type
+```julia
+xvals = trust_region(ones(50)*10, 6, 3, 0.1, cute, cute_g, cute_h, 2000, "dogleg")
+```
+Here (6,3,0.1) are trust-region parameters.
+
 Examples of the code on various functions (e.g., Rosenbrock and cute) are in the
 folder jupyter, which contains various Jupyter notebooks:
 
