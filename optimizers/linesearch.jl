@@ -12,13 +12,14 @@ function line_search(f, x0, g, h, opt_type="steepest", max_iter=50, tol=1e-6)
     println("Using method ", opt_type)
     n = length(x0)
     xvals = Vector{Vector{Float64}}(); push!(xvals, x0)
-    ncalls = 0
+    ncalls = 0; Bk = nothing
 
     for i in 1:max_iter
         i % 100 == 0 && println(i)
         xcurr = xvals[end]
+        xprev = i > 1 ? xvals[end-1] : nothing
 
-        p, alpha, nc = compute_steps(xcurr, f, g, h, opt_type)
+        p, alpha, nc, Bk = compute_steps(xcurr, f, g, h, opt_type, Bk, xprev)
         xnew = xcurr + alpha * p
         push!(xvals, xnew)
         ncalls += nc
@@ -34,7 +35,7 @@ function line_search(f, x0, g, h, opt_type="steepest", max_iter=50, tol=1e-6)
     return(xvals)
 end
 
-function compute_steps(xcurr, f, g, h, opt_type)
+function compute_steps(xcurr, f, g, h, opt_type, Bk, xprev)
     """
     Computes the step size and step direction depending on the type of method
 
@@ -69,15 +70,30 @@ function compute_steps(xcurr, f, g, h, opt_type)
         end
         p = newton_CG(gk, Bk)
         alpha = get_step_size(1, 0.9, xcurr, f, g, p)
-    elseif opt_type == "quasi_Newton_BFGS"
-        println(1)
-    elseif opt_type == "quasi_Newton_SR1"
-        println(1)
+    elseif opt_type == "BFGS"
+        # here Bk is actually the approx inverse Hessian
+        if Bk == nothing
+            Hk = h(xcurr)
+            if !check_posdef(Hk)
+                ncalls += 1
+                Hk = cholesky_mod(1e-3, Hk)
+            end
+            Bk = inv(Hk)
+            p = -Bk * gk
+        else
+        #if xprev != nothing
+            sk = xcurr - xprev
+            yk = gk - g(xprev)
+            Bk = BFGS(sk, yk, Bk)
+            p = -Bk * gk
+        end
+
+        alpha = get_step_size(1, 0.9, xcurr, f, g, p)
     else
         println(1)
     end
 
-    return p, alpha, ncalls
+    return p, alpha, ncalls, Bk
 end
 
 
@@ -106,8 +122,9 @@ function newton_CG(gk, Bk)
     gradnorm = norm(gk, 2)[1]
     tol = min(0.5, sqrt(gradnorm)) * gradnorm
 
-    z = zeros(gk); r = gk; d = -gk; j = 1
+    z = zeros(gk); r = gk; d = -gk
 
+    j = 1
     while true
         if (d' * Bk * d)[1] <= 0
             if j == 1
@@ -129,3 +146,15 @@ function newton_CG(gk, Bk)
     end
 end
 
+function BFGS(sk, yk, Bk)
+"""
+    Performs BFGS update
+    returns search direction approx **inverse Hessian** Bk
+
+    sk: xnew - xcurr
+    yk: gradnew - gradcurr
+    Bk: approx to inverse Hessian
+"""
+    rho = (1 ./ (yk' * sk))[1]
+    return (eye(Bk) - rho * sk * yk') * Bk * (eye(Bk) - rho * yk * sk') + rho * sk * sk'
+end
