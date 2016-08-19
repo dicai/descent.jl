@@ -16,6 +16,9 @@ Julia implementation of various basic optimization methods.
         2. CG-Steinhaug
         3. quasi-Newton SR1 (symmetric rank 1 updating)
 2. Constrained optimization
+    1. Linear constraints
+    2. Active set methods
+    3. Interior point methods
 
 For the line search algorithms, step sizes were chosen using the Armijo
 backtracking algorithm.

@@ -51,10 +51,10 @@ Guide.xlabel("iteration"), Guide.ylabel("gradient norm"), Guide.title("gradient 
 Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], ["blue", "red", "orange", "purple"]),
     Scale.x_log10, Scale.y_log10)
 
-@time xvals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "newton", 2000);
-@time svals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "steepest", 5000);
-@time cvals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "newton_CG", 2000);
-@time qvals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "BFGS", 2000);
+@time xvals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "newton", 2000, 1e-8);
+@time svals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "steepest", 5000, 1e-8);
+@time cvals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "newton_CG", 2000, 1e-8);
+@time qvals = line_search(rosenbrock, ones(100)*3, rosenbrock_g, rosenbrock_h, "BFGS", 2000, 1e-8);
 
 func = rosenbrock
 func_g = rosenbrock_g
@@ -88,10 +88,10 @@ grads4 = [norm(func_g(qvals[i]), 2) for i in 1:nsamps4]
 
 
 Gadfly.plot(
-layer(x=1:nsamps-1, y=grads[2:nsamps,:]./grads[1:nsamps-1,:], Geom.line, Theme(default_color=color("blue"))),
-layer(x=1:nsamps2-1, y=grads2[2:nsamps2,:]./grads2[1:nsamps2-1,:], Geom.line, Theme(default_color=color("red"))),
-layer(x=1:nsamps3-1, y=grads3[2:nsamps3,:]./grads3[1:nsamps3-1,:], Geom.line, Theme(default_color=color("orange"))),
-layer(x=1:nsamps4-1, y=grads4[2:nsamps4,:]./grads4[1:nsamps4-1,:], Geom.line, Theme(default_color=color("purple"))),
+layer(x=1:nsamps-2, y=grads[2:nsamps-1,:]./grads[1:nsamps-2,:], Geom.line, Theme(default_color=color("blue"))),
+layer(x=1:nsamps2-2, y=grads2[2:nsamps2-1,:]./grads2[1:nsamps2-2,:], Geom.line, Theme(default_color=color("red"))),
+layer(x=1:nsamps3-2, y=grads3[2:nsamps3-1,:]./grads3[1:nsamps3-2,:], Geom.line, Theme(default_color=color("orange"))),
+layer(x=1:nsamps4-2, y=grads4[2:nsamps4-1,:]./grads4[1:nsamps4-2,:], Geom.line, Theme(default_color=color("purple"))),
 Guide.xlabel("iteration"), Guide.ylabel("gradient norm ratios"), Guide.title("gradient norm ratios"),
 Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], ["blue", "red", "orange", "purple"]),
 Scale.x_log10, Scale.y_log10)
@@ -104,10 +104,10 @@ Guide.xlabel("iteration"), Guide.ylabel("gradient norm"), Guide.title("gradient 
 Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], ["blue", "red", "orange", "purple"]),
     Scale.x_log10, Scale.y_log10)
 
-@time xvals = line_search(cute, ones(100)*10, cute_g, cute_h, "newton", 2000);
-@time svals = line_search(cute, ones(100)*10, cute_g, cute_h, "steepest", 2000);
-@time cvals = line_search(cute, ones(100)*10, cute_g, cute_h, "newton_CG", 2000);
-@time qvals = line_search(cute, ones(100)*10, cute_g, cute_h, "BFGS", 2000);
+@time xvals = line_search(cute, ones(100)*10, cute_g, cute_h, "newton", 2000, 1e-8);
+@time svals = line_search(cute, ones(100)*10, cute_g, cute_h, "steepest", 2000, 1e-8);
+@time cvals = line_search(cute, ones(100)*10, cute_g, cute_h, "newton_CG", 2000, 1e-8);
+@time qvals = line_search(cute, ones(100)*10, cute_g, cute_h, "BFGS", 2000, 1e-8);
 
 func = cute
 func_g = cute_g
