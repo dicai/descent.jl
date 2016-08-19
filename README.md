@@ -50,6 +50,7 @@ folder jupyter, which contains various Jupyter notebooks:
 
 1. `line_search.ipynb`
 2. `trust_region.ipynb`
+2. `linear_constraints.ipynb`
 
 For each method, we try optimizing several functions, reporting the value of the
 function at each iteration, the ratio of the gradient norms of the current and
