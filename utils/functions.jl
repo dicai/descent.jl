@@ -87,8 +87,8 @@ function cute(x)
     total = 0
     for i in 1:n-4
         total += (-4x[i]+3)^2 + (x[i]^2 + 2*x[i+1]^2 + 3*x[i+2]^2 + 4*x[i+3]^2 + 5*x[n]^2)^2
-		return total
     end
+	return total
 end
 
 cute_g = Calculus.gradient(cute)
