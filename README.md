@@ -17,7 +17,9 @@ Julia implementation of various basic optimization methods.
         3. quasi-Newton SR1 (symmetric rank 1 updating)
 2. Constrained optimization
     1. Linear constraints (`optimizers/linear_constraints.jl`)
-    2. Active set methods
+    2. Active set methods (`optimizers/activeset.jl`)
+        1. Linear programming (2-stage simplex algorithm)
+        2. Quadratic programming
     3. Interior point methods
 
 For the line search algorithms, step sizes were chosen using the Armijo
