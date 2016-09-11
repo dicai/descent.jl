@@ -86,15 +86,7 @@ fx2 = [func(svals[i]) for i in 1:nsamps2]
 fx3 = [func(cvals[i]) for i in 1:nsamps3]
 fx4 = [func(qvals[i]) for i in 1:nsamps4]
 
-
-Gadfly.plot(layer(x=1:nsamps, y=fx, Geom.line, Theme(default_color=color("blue"))),
-layer(x=1:nsamps2, y=fx2, Geom.line, Theme(default_color=color("red"))),
-layer(x=1:nsamps3, y=fx3, Geom.line, Theme(default_color=color("orange"))),
-layer(x=1:nsamps4, y=fx4, Geom.line, Theme(default_color=color("purple"))),
-Guide.xlabel("iteration"), Guide.ylabel("f(x)"), Guide.title("Value of function"),
-Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], 
-    ["blue", "red", "orange", "purple"]),
-Scale.x_log10, Scale.y_log10)
+plot_values(fx, fx2, fx3, fx4, "iteration", "f(x)", "Value of function")
 
 nsamps = length(xvals)
 
@@ -108,24 +100,11 @@ r2 = compute_grad_ratio(grads2)
 r3 = compute_grad_ratio(grads3)
 r4 = compute_grad_ratio(grads4)
 
-Gadfly.plot(
-layer(x=1:length(r1), y=r1, Geom.line, Theme(default_color=color("blue"))),
-layer(x=1:length(r2), y=r2, Geom.line, Theme(default_color=color("red"))),
-layer(x=1:length(r3), y=r3, Geom.line, Theme(default_color=color("orange"))),
-layer(x=1:length(r4), y=r4, Geom.line, Theme(default_color=color("purple"))),
-Guide.xlabel("iteration"), Guide.ylabel("gradient norm ratios"), Guide.title("gradient norm ratios"),
-Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], 
-    ["blue", "red", "orange", "purple"]),
-Scale.x_log10, Scale.y_log10)
+plot_values(r1, r2, r3, r4, "iteration", "gradient norm ratios", 
+    "gradient norm ratios")
 
-Gadfly.plot(layer(x=1:nsamps, y=grads, Geom.line, Theme(default_color=color("blue"))),
-layer(x=1:nsamps2, y=grads2, Geom.line, Theme(default_color=color("red"))),
-layer(x=1:nsamps3, y=grads3, Geom.line, Theme(default_color=color("orange"))),
-layer(x=1:nsamps4, y=grads4, Geom.line, Theme(default_color=color("purple"))),
-Guide.xlabel("iteration"), Guide.ylabel("gradient norm"), Guide.title("gradient norms"),
-Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], 
-    ["blue", "red", "orange", "purple"]),
-    Scale.x_log10, Scale.y_log10)
+plot_values(grads, grads2, grads3, grads4, "iteration", "gradient norms", 
+    "gradient norms")
 
 @time xvals = line_search(cute, ones(100)*10, cute_g, cute_h, "newton", 
     2000, 1e-8);
@@ -150,14 +129,7 @@ fx3 = [func(cvals[i]) for i in 1:nsamps3]
 fx4 = [func(qvals[i]) for i in 1:nsamps4]
 
 
-Gadfly.plot(layer(x=1:nsamps, y=fx, Geom.line, Theme(default_color=color("blue"))),
-layer(x=1:nsamps2, y=fx2, Geom.line, Theme(default_color=color("red"))),
-layer(x=1:nsamps3, y=fx3, Geom.line, Theme(default_color=color("orange"))),
-layer(x=1:nsamps4, y=fx4, Geom.line, Theme(default_color=color("purple"))),
-Guide.xlabel("iteration"), Guide.ylabel("f(x)"), Guide.title("Value of function"),
-Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], 
-    ["blue", "red", "orange", "purple"]),
-Scale.x_log10, Scale.y_log10)
+plot_values(fx, fx2, fx3, fx4, "iteration", "f(x)", "Value of function")
 
 grads = [norm(func_g(xvals[i]), 2) for i in 1:nsamps]
 grads2 = [norm(func_g(svals[i]), 2) for i in 1:nsamps2]
@@ -169,26 +141,11 @@ r2 = compute_grad_ratio(grads2)
 r3 = compute_grad_ratio(grads3)
 r4 = compute_grad_ratio(grads4)
 
-Gadfly.plot(
-layer(x=1:length(r1), y=r1, Geom.line, Theme(default_color=color("blue"))),
-layer(x=1:length(r2), y=r2, Geom.line, Theme(default_color=color("red"))),
-layer(x=1:length(r3), y=r3, Geom.line, Theme(default_color=color("orange"))),
-layer(x=1:length(r4), y=r4, Geom.line, Theme(default_color=color("purple"))),
-Guide.xlabel("iteration"), Guide.ylabel("gradient norm ratios"), 
-    Guide.title("gradient norm ratios"),
-Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], 
-    ["blue", "red", "orange", "purple"]),
-Scale.x_log10, Scale.y_log10)
+plot_values(r1, r2, r3, r4, "iteration", "gradient norm ratio", 
+    "gradient norm ratios")
 
-Gadfly.plot(layer(x=1:nsamps, y=grads, Geom.line, Theme(default_color=color("blue"))),
-layer(x=1:nsamps2, y=grads2, Geom.line, Theme(default_color=color("red"))),
-layer(x=1:nsamps3, y=grads3, Geom.line, Theme(default_color=color("orange"))),
-layer(x=1:nsamps4, y=grads4, Geom.line, Theme(default_color=color("purple"))),
-Guide.xlabel("iteration"), Guide.ylabel("gradient norm"), 
-Guide.title("gradient norms"),
-Guide.manual_color_key("Legend", ["Newton", "steepest", "Newton-CG", "BFGS"], 
-    ["blue", "red", "orange", "purple"]),
-    Scale.x_log10, Scale.y_log10)
+plot_values(grads, grads2, grads3, grads4, "iteration", "gradient norm", 
+    "gradient norms")
 
 
 
