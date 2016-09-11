@@ -150,10 +150,8 @@ function solve_subproblem(delta, gk, Bk, method="cauchy")
         pnorm = norm(p_B, 2)
         if pnorm > delta
             return cauchy_point(delta, gk, Bk)
-            #return p_B
         elseif pnorm < delta
             return p_B
-            #-Bk \ gk
         else
             return dogleg(delta, gk, Bk, p_U)
         end

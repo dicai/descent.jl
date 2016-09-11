@@ -13,10 +13,13 @@ function plot_values(fx1, fx2, fx3, fx4, xlab, ylab, title)
     nsamps4 = length(fx4)
     
     Gadfly.plot(layer(x=1:nsamps, y=fx1, Geom.line, 
-        Theme(default_color=color("blue"))),
-        layer(x=1:nsamps2, y=fx2, Geom.line, Theme(default_color=color("red"))),
-        layer(x=1:nsamps3, y=fx3, Geom.line, Theme(default_color=color("orange"))),
-        layer(x=1:nsamps4, y=fx4, Geom.line, Theme(default_color=color("purple"))),
+            Theme(default_color=color("blue"))),
+        layer(x=1:nsamps2, y=fx2, Geom.line, 
+            Theme(default_color=color("red"))),
+        layer(x=1:nsamps3, y=fx3, Geom.line, 
+            Theme(default_color=color("orange"))),
+        layer(x=1:nsamps4, y=fx4, Geom.line, 
+            Theme(default_color=color("purple"))),
         Guide.xlabel(xlab), Guide.ylabel(ylab), 
         Guide.title(title),
         Guide.manual_color_key("Legend", 
